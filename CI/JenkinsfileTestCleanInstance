@@ -192,6 +192,7 @@ pipeline {
            export polycubed="docker run -d --name polycubed --rm --privileged --network host -v /lib/modules:/lib/modules:ro -v /usr/src:/usr/src:ro -v /etc/localtime:/etc/localtime:ro polycubebot/${image_name}-default:${image_tag}"
            cd tests/
            # For the moment, tests always returns 0 to enable junit generation
+           sudo ln -s /var/run/docker/netns  /var/run/netns
            ./run-tests.sh || true
            export LC_ALL=C
            virtualenv venv -p python3
@@ -250,6 +251,7 @@ pipeline {
                   export PATH=$PATH:${WORKSPACE}/bin
                   export KILL_COMMAND="docker stop polycubed"
                   export polycubed="docker run -d --name polycubed --rm --privileged --network host -v /lib/modules:/lib/modules:ro -v /usr/src:/usr/src:ro -v /etc/localtime:/etc/localtime:ro polycubebot/${image_name}-default:${image_tag}"
+                  sudo ln -s /var/run/docker/netns  /var/run/netns
                   cd tests/ && ./run-tests.sh false || true
                   export LC_ALL=C
                   virtualenv venv -p python3
@@ -308,7 +310,8 @@ pipeline {
                   export KILL_COMMAND="docker stop polycubed"
                   export polycubed="docker run -d --name polycubed --rm --privileged --network host -v /lib/modules:/lib/modules:ro -v /usr/src:/usr/src:ro -v /etc/localtime:/etc/localtime:ro             polycubebot/${image_name}-pcn-iptables:${image_tag}"
                   cd tests/
-                  ./run-tests-iptables.sh || true
+                  sudo ln -s /var/run/docker/netns  /var/run/netns
+                  ./run-tests-iptables.sh false || true
                   export LC_ALL=C
                   virtualenv venv -p python3
                   . venv/bin/activate
